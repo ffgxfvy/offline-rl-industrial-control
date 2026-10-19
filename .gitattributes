@@ -1,0 +1,25 @@
+# 统一换行符，避免 Windows/Linux 混合开发的 diff 噪音
+* text=auto eol=lf
+
+# 二进制文件不做换行转换
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.bmp  binary
+*.ico  binary
+*.emf  binary
+*.eps  binary
+*.pth  binary
+*.safetensors binary
+*.mat  binary
+*.slx  binary
+*.xlsx binary
+*.zip  binary
+
+# 让 git 统计时把 CSV 当数据而非源码
+*.csv  linguist-language=CSV
+
+# 语言统计：把 MATLAB 与 Jupyter 正确归类
+*.m    linguist-language=MATLAB
+*.ipynb linguist-documentation

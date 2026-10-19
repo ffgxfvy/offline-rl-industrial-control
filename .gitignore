@@ -1,0 +1,37 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+.ipynb_checkpoints/
+
+# ---- 测试与绘图缓存 ----
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# ---- 数据集（未经授权不公开，见 data/README.md）----
+data/data.csv
+data/*.csv
+!results/**/*.csv
+
+# ---- 模型权重（用 GitHub Release 或 HF Hub 分发）----
+*.pth
+*.safetensors
+*.ckpt
+
+# ---- 压缩包 / 大文件 ----
+*.zip
+*.rar
+*.7z
+*.tar
+*.tar.gz
+
+# ---- 系统 ----
+.DS_Store
+Thumbs.db
+desktop.ini
