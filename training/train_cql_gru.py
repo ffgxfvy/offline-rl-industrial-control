@@ -7,7 +7,12 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
-import pandas as pd
+import sys
+from pathlib import Path
+_SRC_DIR = str(Path(__file__).resolve().parent.parent / "src")
+if _SRC_DIR not in sys.path:
+    sys.path.insert(0, _SRC_DIR)
+import csv_io as pd
 import numpy as np
 import random
 import matplotlib.pyplot as plt

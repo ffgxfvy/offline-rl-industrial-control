@@ -1,7 +1,7 @@
 # Offline RL for Industrial Control
 
 [![CI](https://github.com/ffgxfvy/offline-rl-industrial-control/actions/workflows/ci.yml/badge.svg)](https://github.com/ffgxfvy/offline-rl-industrial-control/actions/workflows/ci.yml)
-[![tests](https://img.shields.io/badge/tests-64%20passed-brightgreen)](#测试与-ci)
+[![tests](https://img.shields.io/badge/tests-66%20passed-brightgreen)](#测试与-ci)
 [![python](https://img.shields.io/badge/python-3.8%2B-blue)](pyproject.toml)
 
 > 工业控制策略的离线强化学习：同一任务迭代三代策略网络，评测得分 **6.22 → 10.86 → 30.44**（各 100 个随机种子的均值），平均状态误差 **1.276 → 0.394**。
@@ -64,16 +64,18 @@ y = r + γ · (1 − done) · Q_target(s', π_target(s'))
 ```
 .
 ├── src/
+│   ├── csv_io.py                   # 轻量 CSV 读取适配层（兼容无 pandas / NumPy ABI 隔离环境）
 │   ├── gen2_td_agent.py            # v2：帧堆叠 + 时序差分特征
 │   ├── gen3_history_agent.py       # v3：帧堆叠历史观测
 │   ├── gen4_tcn_agent.py           # v4：TCN 时序卷积（本项目最佳）
-│   └── variants/                    # 其他探索版本
+│   └── variants/                    # 其他探索版本（含 GRU / 保守 CQL 变体）
 ├── training/
 │   └── train_cql_gru.py            # CQL + GRU 训练脚本（离线数据集全流程）
 ├── scripts/
 │   ├── evaluator.py                # 本地评测器（评测服务端的同构实现）
-│   └── plot_evolution.py           # 复现 README 中两张图
-├── tests/                           # 64 个 pytest 测试（含因果性不变量检查）
+│   ├── generate_demo_data.py       # 同构合成轨迹 CSV 生成器（用于无原数据集下的加载与训练冒烟验证）
+│   └── plot_evolution.py           # 复现 README 中两张图（兼容 matplotlib 3.5–3.11+）
+├── tests/                           # 66 个 pytest 测试（含因果性不变量、数据契约与单步训练冒烟测试）
 ├── results/
 │   ├── gen2_td/evaluation_results.csv
 │   ├── gen3_history/evaluation_results.csv
@@ -95,7 +97,10 @@ pip install -r requirements.txt
 # 1) 复现 README 中的对比图（无需完整数据集，results/ 里已有三份评测记录）
 python scripts/plot_evolution.py
 
-# 2) 本地评测（需要把 data.csv 放到 data/ 下）
+# 2) 本地合成轨迹生成与端到端冒烟验证（无需完整 14 MB 原数据集）
+python scripts/generate_demo_data.py --output data/demo_data.csv
+
+# 3) 本地评测（需要把主办方 data.csv 放到 data/ 下）
 python scripts/evaluator.py --agent src/gen4_tcn_agent.py
 
 # 3) 重新训练（见 training/train_cql_gru.py 顶部配置区）
@@ -113,7 +118,7 @@ pip install -r requirements.txt -r requirements-dev.txt
 pytest tests -v
 ```
 
-**64 个测试**，按"这些代码真的会在线上被调用"的假设来写，覆盖四类风险：
+**66 个测试**（全量纯标准库 + NumPy/PyTorch/Matplotlib 可运行，不强依赖 C 扩展版 `pandas`），覆盖五类风险：
 
 | 测试文件 | 守的是什么 |
 |---|---|
@@ -122,6 +127,7 @@ pytest tests -v
 | `test_agent_interface.py` | 评测服务依赖的 `BaseAgent` 契约：动作维度 `(3,)`、裁剪到 `[-1,1]`、观测放大 100 倍仍合法、同种子可复现、`reset`/`close` 幂等、动作对观测敏感（防止策略退化成常量）。 |
 | `test_results.py` | `results/*/evaluation_results.csv` 的数据契约：100 个 seed、列名、无缺失、三代得分单调提升。**README 里的结论若被数据推翻，这里会先报警。** |
 | `test_plot_backend.py` | 绘图脚本可运行，且输出的三代均值与 README 一致。 |
+| `test_synthetic_training_smoke.py` | 用合成同构轨迹验证三代 CSV 加载切分与 `TCNCQL.update()` 单步反向传播全链路有效。 |
 
 CI（`.github/workflows/ci.yml`）在 Python 3.9 / 3.11 上各跑一遍，并重新生成对比图作为冒烟测试，产物作为 artifact 上传。
 

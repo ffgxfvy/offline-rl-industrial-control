@@ -38,7 +38,6 @@ def test_plot_script_is_syntactically_valid():
 
 def test_plot_script_writes_both_figures_to_outdir(tmp_path):
     pytest.importorskip("matplotlib")
-    pytest.importorskip("pandas")
 
     result = _run([str(SCRIPT), "--outdir", str(tmp_path)])
     assert result.returncode == 0, f"stdout={result.stdout}\nstderr={result.stderr}"
@@ -53,7 +52,6 @@ def test_plot_script_writes_both_figures_to_outdir(tmp_path):
 def test_plot_script_reports_the_three_generation_means(tmp_path):
     """汇总表打印的三代得分必须与 README 中的数据一致。"""
     pytest.importorskip("matplotlib")
-    pytest.importorskip("pandas")
 
     result = _run([str(SCRIPT), "--outdir", str(tmp_path)])
     assert result.returncode == 0, result.stderr

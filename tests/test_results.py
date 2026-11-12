@@ -19,7 +19,7 @@ GENERATIONS = ["gen2_td", "gen3_history", "gen4_tcn"]
 
 @pytest.fixture(params=GENERATIONS)
 def df(request):
-    pd = pytest.importorskip("pandas")
+    import csv_io as pd
     path = RESULTS / request.param / "evaluation_results.csv"
     assert path.exists(), f"缺少评测记录：{path}"
     return pd.read_csv(path)
@@ -54,8 +54,7 @@ def test_state_error_is_non_negative(df):
 
 def test_generations_are_ordered_as_documented():
     """README 声称的单调提升：gen2 < gen3 < gen4。若数据被替换，这里会报警。"""
-    pytest.importorskip("pandas")
-    import pandas as pd
+    import csv_io as pd
 
     means = {}
     for gen in GENERATIONS:

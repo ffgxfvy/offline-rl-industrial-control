@@ -5,7 +5,10 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
-import pandas as pd
+try:
+    import csv_io as pd
+except ImportError:
+    from src import csv_io as pd
 from abc import ABC, abstractmethod
 
 

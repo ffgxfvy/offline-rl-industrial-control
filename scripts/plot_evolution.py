@@ -5,7 +5,9 @@
 """
 import argparse
 import os
-import pandas as pd
+import sys
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src"))
+import csv_io as pd
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -77,7 +79,8 @@ print("saved", out1)
 # ---------- 图 2：100 seeds 分布箱线图 ----------
 fig, ax = plt.subplots(figsize=(7.5, 4.6), dpi=160)
 box = ax.boxplot([data[g[0]].score.values for g in GENS], patch_artist=True,
-                 labels=labels, widths=0.5, showmeans=True)
+                 widths=0.5, showmeans=True)
+ax.set_xticklabels(labels)
 for patch, c in zip(box["boxes"], colors):
     patch.set_facecolor(c); patch.set_alpha(0.85)
 for i, g in enumerate(GENS, start=1):
